@@ -42,17 +42,19 @@ evaluating all of the tokens in tokens on an empty stack or it raises Division_b
 exception if the input’s indicated computation would divide by 0. If tokens is not a valid
 list of tokens, eval tokens raises an InvalidExpression exception
 *)
+
 let eval (tokens : token list) : int list =
-  let step (stack : int list) (t : token) : int list =
-    match t, stack with 
-    | Integer n, _ -> n :: stack
-    | Multiply, b :: a :: stack -> (a * b) :: stack
-    | Add, b :: a :: stack -> (a + b) :: stack
-    | Subtract, b :: a :: stack -> (a - b) :: stack
-    | Divide, b :: a :: stack -> (a / b) :: stack
-    | SumAll, _ -> [List.fold_left (+) 0 stack]
-    | (Multiply | Add | Subtract | Divide), _ -> failwith ("InvalidExpression")
-  in List.fold_left step [] tokens
+  List.fold_left
+    (fun (stack : int list) (t : token) ->
+      match t, stack with
+      | Integer n, _ -> n :: stack
+      | Multiply, b :: a :: rest -> (a * b) :: rest
+      | Add, b :: a :: rest -> (a + b) :: rest
+      | Subtract, b :: a :: rest -> (a - b) :: rest
+      | Divide, b :: a :: rest -> (a / b) :: rest
+      | SumAll, _ -> [List.fold_left (+) 0 stack]
+      | (Multiply | Add | Subtract | Divide), _ -> failwith("InvalidExpression")
+    [] tokens
 
 (*
 rpn : string -> int list
