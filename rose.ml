@@ -1,5 +1,8 @@
-(* Huy Phan
-   Harry Nguyen *)
+(* 
+Huy Phan
+Harry Nguyen
+Duc Bui   
+*)
 
 type 'a rose = Rose of 'a * 'a rose list
 
