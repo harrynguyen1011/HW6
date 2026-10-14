@@ -51,7 +51,7 @@ let eval (tokens : token list) : int list =
     | Subtract, b :: a :: stack -> (a - b) :: stack
     | Divide, b :: a :: stack -> (a / b) :: stack
     | SumAll, _ -> [List.fold_left (+) 0 stack]
-    | (Multiply | Add | Subtract | Divide), _ -> failwith ("Not Enough Operands")
+    | (Multiply | Add | Subtract | Divide), _ -> failwith ("InvalidExpression")
   in List.fold_left step [] tokens
 
 (*
