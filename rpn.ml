@@ -34,6 +34,16 @@ let parse (s : string) : token list =
   let s_processed = List.filter (fun c -> c <> "") (s_list) in
   List.map (tokenize) (s_processed)
 
+let match_exp = fun acc a ->
+  match (acc, a) with
+  | (_, Integer x) -> x::acc
+  | (acc, SumAll) -> [List.fold_left (+) 0 acc] 
+  | (_::[], _) |([], _) -> raise InvalidExpression
+  | (x::y::acc', Multiply) -> (x * y)::acc'
+  | (x::y::acc', Add) -> (x + y)::acc'
+  | (x::y::acc', Subtract) -> (y - x)::acc'
+  | (x::y::acc', Divide) -> (y / x)::acc'
+
 (*
 eval : token list -> int list
 REQUIRES: true
@@ -43,18 +53,9 @@ exception if the input’s indicated computation would divide by 0. If tokens is
 list of tokens, eval tokens raises an InvalidExpression exception
 *)
 
-let eval (tokens : token list) : int list =
-  List.fold_left
-    (fun (stack : int list) (t : token) ->
-      match t, stack with
-      | Integer n, _ -> n :: stack
-      | Multiply, b :: a :: rest -> (a * b) :: rest
-      | Add, b :: a :: rest -> (a + b) :: rest
-      | Subtract, b :: a :: rest -> (a - b) :: rest
-      | Divide, b :: a :: rest -> (a / b) :: rest
-      | SumAll, _ -> [List.fold_left (+) 0 stack]
-      | (Multiply | Add | Subtract | Divide), _ -> failwith("InvalidExpression")
-    [] tokens
+let eval = fun tokens ->
+  tokens
+  |> List.fold_left match_exp []
 
 (*
 rpn : string -> int list
