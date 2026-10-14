@@ -1,3 +1,8 @@
+(*
+Harry Nguyen
+Huy Phan
+Duc Bui
+*)
 type token =
   | Integer of int
   | Multiply
@@ -18,11 +23,25 @@ let tokenize ( t : string ) : token =
   | None -> failwith (" invalid token : " ^ t )
 
 let (%) ( f : 'a -> 'b ) ( g : 'c -> 'a ) ( x : 'c ) : 'b = f ( g x )
+
+(*
+parse : string -> token list
+REQUIRES: s is a space-separated string of RPN tokens
+ENSURES: parse s -∗→ an ordered list of the tokens that appear in s
+*)
 let parse (s : string) : token list =
   let s_list = String.split_on_char (' ') (s) in
   let s_processed = List.filter (fun c -> c <> "") (s_list) in
   List.map (tokenize) (s_processed)
 
+(*
+eval : token list -> int list
+REQUIRES: true
+ENSURES: If tokens is a valid list of tokens, eval tokens -∗→ the resulting stack after
+evaluating all of the tokens in tokens on an empty stack or it raises Division_by_zero
+exception if the input’s indicated computation would divide by 0. If tokens is not a valid
+list of tokens, eval tokens raises an InvalidExpression exception
+*)
 let eval (tokens : token list) : int list =
   let step (stack : int list) (t : token) : int list =
     match t, stack with 
@@ -35,7 +54,13 @@ let eval (tokens : token list) : int list =
     | (Multiply | Add | Subtract | Divide), _ -> failwith ("Not Enough Operands")
   in List.fold_left step [] tokens
 
-
+(*
+rpn : string -> int list
+REQUIRES: s is a space-separated string of RPN tokens
+ENSURES: rpn s -∗→ the resulting stack after evaluating RPN expression s or it raises
+Division_by_zero exception if the input’s indicated computation would divide by 0.
+If s is not a valid RPN expression, rpn s raises an InvalidExpression exception
+*)
 let rpn (s : string) : int list = 
   let token_list = parse (s) in 
   eval (token_list)
